@@ -4,11 +4,12 @@ import {Subject} from "rxjs/Subject";
 
 export namespace Tick {
     export interface TickEngine {
-        start():void
-        stop():void
-        pause():void
-        resume():void
+        start():TickEngine
+        stop():TickEngine
+        pause():TickEngine
+        resume():TickEngine
         ticks():Observable<TickFrame>
+        status():TickEngineStatus
     }
 
     export interface TickEngineOption {
@@ -28,7 +29,7 @@ export namespace Tick {
         return new TickEngineImpl(options);
     }
 
-    enum TickEngineStatus {
+    export enum TickEngineStatus {
         RUNNING, STOPPED, PAUSED
     }
     const DEFAULT_PERIOD = 50;
@@ -40,7 +41,7 @@ export namespace Tick {
         private startPauseTime:number;
         private pauseTime:number;
         private subject:Subject<TickFrame>;
-        private status:TickEngineStatus;
+        private currentStatus:TickEngineStatus;
 
         constructor(options?:TickEngineOption) {
             if (options) {
@@ -55,29 +56,27 @@ export namespace Tick {
             }
             this.currentTick=0;
             this.subject = new Subject();
-            this.status = TickEngineStatus.STOPPED;
+            this.currentStatus = TickEngineStatus.STOPPED;
         }
 
-        start():void {
-            if (this.status===TickEngineStatus.STOPPED) {
+        start():TickEngine {
+            if (this.currentStatus===TickEngineStatus.STOPPED) {
                 this.startTime = Date.now();
                 this.currentTick = 0;
                 this.pauseTime = 0;
-                this.status = TickEngineStatus.RUNNING;
+                this.currentStatus = TickEngineStatus.RUNNING;
                 this.setInterval();
-            } else {
-                console.error('cannot start timer already running');
             }
+            return this;
         }
 
-        resume():void {
-            if (this.status===TickEngineStatus.PAUSED) {
+        resume():TickEngine {
+            if (this.currentStatus===TickEngineStatus.PAUSED) {
                 this.pauseTime += Date.now() - this.startPauseTime;
-                this.status = TickEngineStatus.RUNNING;
+                this.currentStatus = TickEngineStatus.RUNNING;
                 this.setInterval();
-            } else {
-                console.error('cannot resume timer not paused');
             }
+            return this;
         }
 
         private setInterval() {
@@ -87,19 +86,28 @@ export namespace Tick {
             clearInterval(this.timer);          
         }
         
-        stop():void {
-            this.status = TickEngineStatus.STOPPED;
-            this.clearInterval();     
+        stop():TickEngine {
+            this.currentStatus = TickEngineStatus.STOPPED;
+            this.clearInterval();
+            return this;
         }
 
-        pause():void {
-            this.status = TickEngineStatus.PAUSED;
-            this.startPauseTime = Date.now();
-            clearInterval(this.timer);                 
+        pause():TickEngine {
+            if (this.currentStatus==TickEngineStatus.RUNNING) {
+                this.currentStatus = TickEngineStatus.PAUSED;
+                this.startPauseTime = Date.now();
+                clearInterval(this.timer);
+            }
+            return this;
         }
 
         ticks():Observable<TickFrame> {
             return this.subject.asObservable();
+        }
+
+
+        status():TickEngineStatus {
+            return this.currentStatus;
         }
 
         private tryTick() {

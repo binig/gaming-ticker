@@ -3,6 +3,7 @@ import * as sinon from 'sinon';
 import {Tick} from "../../src/tick/Tick";
 import TickFrame = Tick.TickFrame;
 import TickEngine = Tick.TickEngine;
+import TickEngineStatus = Tick.TickEngineStatus;
 import createTick = Tick.createTickEngine;
 
 describe("Tick test",()=>{
@@ -96,8 +97,36 @@ describe("Tick test",()=>{
         expect(ticks.length, 'tick again after restart').to.be.eq(3);
         expect(ticks[2].tick).to.be.eq(3);
         expect(ticks[2].timestamp).to.be.eq(150);
-
         clock.restore();
     });
+
+
+    it('Test state from STOPPED', () => {
+        const clock = sinon.useFakeTimers();
+        expect(createTick().status()).to.eq(TickEngineStatus.STOPPED);
+        expect(createTick().pause().status()).to.eq(TickEngineStatus.STOPPED);
+        expect(createTick().resume().status()).to.eq(TickEngineStatus.STOPPED);
+        expect(createTick().start().status()).to.eq(TickEngineStatus.RUNNING);
+        clock.restore();
+    });
+
+    it('Test state from RUNNING', () => {
+        const clock = sinon.useFakeTimers();
+        expect(createTick().start().status()).to.eq(TickEngineStatus.RUNNING);
+        expect(createTick().start().pause().status()).to.eq(TickEngineStatus.PAUSED);
+        expect(createTick().start().resume().status()).to.eq(TickEngineStatus.RUNNING);
+        expect(createTick().start().stop().status()).to.eq(TickEngineStatus.STOPPED);
+        clock.restore();
+    });
+
+    it('Test state from PAUSED', () => {
+        const clock = sinon.useFakeTimers();
+        expect(createTick().start().pause().status()).to.eq(TickEngineStatus.PAUSED);
+        expect(createTick().start().pause().start().status()).to.eq(TickEngineStatus.PAUSED);
+        expect(createTick().start().pause().resume().status()).to.eq(TickEngineStatus.RUNNING);
+        expect(createTick().start().pause().stop().status()).to.eq(TickEngineStatus.STOPPED);
+        clock.restore();
+    });
+
 });
 
