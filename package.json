@@ -16,30 +16,30 @@
     "prepublish": "npm run clean && npm run report && npm run build && npm run doc"
   },
   "devDependencies": {
-    "@types/chai": "^4.0.1",
-    "@types/mocha": "^2.2.41",
-    "@types/node": "^8.0.14",
-    "chai": "^4.1.0",
-    "chromedriver": "^2.30.1",
-    "codecov": "^3.0.0",
-    "cross-env": "^5.0.1",
-    "growl": "^1.10.2",
-    "istanbul-reports": "^1.1.1",
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^12.0.2",
+    "chai": "^4.2.0",
+    "chromedriver": "^74.0.0",
+    "codecov": "^3.5.0",
+    "cross-env": "^5.2.0",
+    "growl": "^1.10.5",
+    "istanbul-reports": "^2.2.6",
     "mkdirp": "^0.5.1",
-    "mocha": "^4.0.1",
-    "nyc": "^11.3.0",
-    "rimraf": "^2.6.1",
-    "rxjs": "^5.4.2",
-    "sinon": "^4.0.2",
+    "mocha": "^6.1.4",
+    "nyc": "^14.1.1",
+    "rimraf": "^2.6.3",
+    "rxjs": "^6.5.2",
+    "sinon": "^7.3.2",
     "ts-helper": "^0.0.1",
-    "ts-loader": "^3.1.1",
-    "ts-node": "^3.2.1",
-    "typedoc": "^0.9.0",
-    "typescript": "^2.4.1",
-    "webpack": "^3.3.0"
+    "ts-loader": "^6.0.1",
+    "ts-node": "^8.1.0",
+    "typedoc": "^0.14.2",
+    "typescript": "^3.4.5",
+    "webpack": "^4.32.2"
   },
   "peerDependencies": {
-    "rxjs": "^5.4.2"
+    "rxjs": "^6.5.2"
   },
   "nyc": {
     "include": [
